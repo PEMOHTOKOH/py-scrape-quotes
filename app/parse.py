@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass, fields, astuple
 import requests
 from bs4 import BeautifulSoup, Tag
@@ -18,7 +19,8 @@ QUOTE_FIELDS = [field.name for field in fields(Quote)]
 
 
 def parse_single_quote(quote: Tag) -> Quote:
-    tags = quote.select_one(".keywords")["content"]
+    keywords = quote.select_one(".keywords")
+    tags = keywords.get("content", "") if keywords else ""
 
     return Quote(
         text=quote.select_one(".text").text,
@@ -48,6 +50,7 @@ def get_quotes() -> list[Quote]:
             break
 
         page_num += 1
+        time.sleep(1)
 
     return all_quotes
 
